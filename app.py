@@ -1,19 +1,16 @@
 import os
 import gradio as gr
+import spaces
 from smolagents import CodeAgent, InferenceClientModel
 from tools import search_arxiv
 
-
-# 1. Initialize Qwen 2.5 Coder via the Serverless Inference API.
-# It automatically securely pulls your HF_TOKEN from the environment variables.
+# 1. Initialize Qwen 2.5 Coder via the Serverless API
 model = InferenceClientModel(
     model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
     token=os.environ.get("HF_TOKEN")
 )
 
-
-# 2. Assemble the CodeAgent.
-# We cap execution at 5 steps to prevent the agent from getting stuck in an infinite loop.
+# 2. Assemble the CodeAgent
 agent = CodeAgent(
     tools=[search_arxiv], 
     model=model,
@@ -21,12 +18,12 @@ agent = CodeAgent(
     max_steps=5
 )
 
-# 3. Create the standard Gradio Web Interface
+# 3. Define the execution function and request ZeroGPU allocation
+@spaces.GPU
 def agent_chat(user_prompt):
-    # The agent processes the goal, executes the python code, and returns a final string
     return agent.run(user_prompt)
 
-# Launch the UI
+# 4. Launch the Gradio Chat Interface
 demo = gr.Interface(
     fn=agent_chat,
     inputs=gr.Textbox(lines=2, placeholder="E.g., Find 2 recent papers on Agentic AI and format them as BibTeX."),
@@ -36,3 +33,42 @@ demo = gr.Interface(
 )
 
 demo.launch()
+
+# import os
+# import gradio as gr
+# from smolagents import CodeAgent, InferenceClientModel
+# from tools import search_arxiv
+
+
+# # 1. Initialize Qwen 2.5 Coder via the Serverless Inference API.
+# # It automatically securely pulls your HF_TOKEN from the environment variables.
+# model = InferenceClientModel(
+#     model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
+#     token=os.environ.get("HF_TOKEN")
+# )
+
+
+# # 2. Assemble the CodeAgent.
+# # We cap execution at 5 steps to prevent the agent from getting stuck in an infinite loop.
+# agent = CodeAgent(
+#     tools=[search_arxiv], 
+#     model=model,
+#     add_base_tools=False,
+#     max_steps=5
+# )
+
+# # 3. Create the standard Gradio Web Interface
+# def agent_chat(user_prompt):
+#     # The agent processes the goal, executes the python code, and returns a final string
+#     return agent.run(user_prompt)
+
+# # Launch the UI
+# demo = gr.Interface(
+#     fn=agent_chat,
+#     inputs=gr.Textbox(lines=2, placeholder="E.g., Find 2 recent papers on Agentic AI and format them as BibTeX."),
+#     outputs=gr.Markdown(label="Agent Output"),
+#     title="Autonomous arXiv Research Agent",
+#     description="Powered by smolagents and Qwen 2.5 Coder"
+# )
+
+# demo.launch()
