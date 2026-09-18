@@ -17,7 +17,7 @@ model = InferenceClientModel(
 agent = CodeAgent(
     tools=[search_arxiv], 
     model=model,
-    add_base_tools=True,
+    add_base_tools=False,
     max_steps=5
 )
 
