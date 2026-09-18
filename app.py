@@ -1,14 +1,16 @@
 import os
 import gradio as gr
-from smolagents import CodeAgent, HfApiModel
+from smolagents import CodeAgent, InferenceClientModel
 from tools import search_arxiv
+
 
 # 1. Initialize Qwen 2.5 Coder via the Serverless Inference API.
 # It automatically securely pulls your HF_TOKEN from the environment variables.
-model = HfApiModel(
+model = InferenceClientModel(
     model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
     token=os.environ.get("HF_TOKEN")
 )
+
 
 # 2. Assemble the CodeAgent.
 # We cap execution at 5 steps to prevent the agent from getting stuck in an infinite loop.
